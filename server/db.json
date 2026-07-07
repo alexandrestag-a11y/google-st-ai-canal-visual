@@ -1,0 +1,373 @@
+{
+  "products": [
+    {
+      "id": "w-thane-srd-501",
+      "name": "Esmalte Poliuretano Alifático W-THANE SRD 501",
+      "description": "Acabamento poliuretano acrílico alifático bicomponente. Proporciona excelente brilho, retenção de cor e resistência aos raios UV. Indicado para pintura de estruturas metálicas expostas ao intemperismo em ambientes industriais, máquinas, implementos agrícolas e portões industriais de alto padrão.",
+      "summary": "Tinta poliuretano de alta performance com excelente brilho e retenção de cor para ambientes externos.",
+      "category": "industrial",
+      "price": 185.90,
+      "image": "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&auto=format&fit=crop&q=80",
+      "isPaint": true,
+      "colors": [
+        { "name": "Branco Munique WEG", "hex": "#f5f5f5", "priceDelta": 0 },
+        { "name": "Azul Segurança RAL 5005", "hex": "#0f4c81", "priceDelta": 15.00 },
+        { "name": "Amarelo Segurança RAL 1003", "hex": "#f2a900", "priceDelta": 22.50 },
+        { "name": "Cinza Médio RAL 7001", "hex": "#8a9597", "priceDelta": 10.00 },
+        { "name": "Vermelho Segurança RAL 3000", "hex": "#af1024", "priceDelta": 25.00 },
+        { "name": "Verde Segurança RAL 6018", "hex": "#1b8a5a", "priceDelta": 18.00 }
+      ],
+      "filters": {
+        "secagem": "Ao toque 2h, Manuseio 6h, Final 7 dias",
+        "brilho": "Brilhante",
+        "embalagem": "Galão 3,6L",
+        "espessura": "50 a 75 micrometros",
+        "rendimento": "10 a 14 m²/L por demão"
+      },
+      "seo": {
+        "title": "Tinta W-THANE SRD 501 WEG - Revendedor Canal Visual",
+        "description": "Compre Tinta Poliuretano WEG W-THANE SRD 501 original na Canal Visual. Alta resistência, brilho e proteção UV. Envio rápido para todo o Brasil."
+      },
+      "relatedIds": ["cat-w-thane-501", "diluente-pu-5003"]
+    },
+    {
+      "id": "w-poxi-ind-322",
+      "name": "Primer/Acabamento Epóxi W-POXI IND 322",
+      "description": "Tinta epóxi bicomponente de alta espessura. Atua como primer e acabamento, oferecendo excepcional resistência química, mecânica e anticorrosiva. Ideal para aplicação em superfícies de concreto, aço carbono, pisos industriais de concreto e estruturas metálicas internas de galpões.",
+      "summary": "Tinta epóxi bicomponente multifunção (primer/acabamento) com excelente aderência e resistência química.",
+      "category": "industrial",
+      "price": 169.90,
+      "image": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600&auto=format&fit=crop&q=80",
+      "isPaint": true,
+      "colors": [
+        { "name": "Cinza Claro RAL 7035", "hex": "#d3d3d3", "priceDelta": 0 },
+        { "name": "Branco Segurança", "hex": "#ffffff", "priceDelta": 5.00 },
+        { "name": "Cinza Escuro RAL 7016", "hex": "#383e42", "priceDelta": 10.00 },
+        { "name": "Verde Segurança", "hex": "#2e6f40", "priceDelta": 15.00 }
+      ],
+      "filters": {
+        "secagem": "Ao toque 3h, Manuseio 8h, Final 7 dias",
+        "brilho": "Semi-brilho",
+        "embalagem": "Galão 3,6L",
+        "espessura": "100 a 150 micrometros",
+        "rendimento": "8 a 12 m²/L por demão"
+      },
+      "seo": {
+        "title": "Tinta Epóxi WEG W-POXI IND 322 - Canal Visual",
+        "description": "Tinta Epóxi WEG W-POXI 322 ideal para pisos e concreto. Compre original na Canal Visual. Suporte técnico disponível."
+      },
+      "relatedIds": ["cat-w-poxi-322", "diluente-epoxi-3005"]
+    },
+    {
+      "id": "w-lack-hpd-151",
+      "name": "Esmalte Sintético W-LACK HPD 151",
+      "description": "Esmalte sintético alquídico monocomponente de secagem extra rápida. Desenvolvido para proteção e acabamento de superfícies metálicas e de madeira. Excelente retenção de brilho e ótima flexibilidade, muito utilizado em implementos agrícolas, máquinas, serralherias e portões comerciais.",
+      "summary": "Esmalte alquídico de secagem extra rápida para metais e madeiras.",
+      "category": "imobiliaria",
+      "price": 95.00,
+      "image": "https://images.unsplash.com/photo-1525909002-1b0570d869d8?w=600&auto=format&fit=crop&q=80",
+      "isPaint": true,
+      "colors": [
+        { "name": "Preto Chassi", "hex": "#111111", "priceDelta": 0 },
+        { "name": "Branco Brilhante", "hex": "#fcfcfc", "priceDelta": 0 },
+        { "name": "Vermelho Ferrari", "hex": "#c8102e", "priceDelta": 12.00 },
+        { "name": "Verde Weg", "hex": "#00563b", "priceDelta": 15.00 },
+        { "name": "Cinza Escuro RAL 7024", "hex": "#454a50", "priceDelta": 8.00 }
+      ],
+      "filters": {
+        "secagem": "Ao toque 15 min, Manuseio 1h, Final 24h",
+        "brilho": "Brilhante",
+        "embalagem": "Galão 3,6L",
+        "espessura": "35 a 50 micrometros",
+        "rendimento": "12 a 16 m²/L por demão"
+      },
+      "seo": {
+        "title": "W-LACK HPD 151 WEG - Esmalte Secagem Rápida | Canal Visual",
+        "description": "Tinta esmalte WEG alquídico de secagem rápida. Excelente brilho e resistência. Compre com distribuidor autorizado Canal Visual."
+      },
+      "relatedIds": ["diluente-aguarras-1002"]
+    },
+    {
+      "id": "cat-w-thane-501",
+      "name": "Catalisador PU para W-THANE 501",
+      "description": "Agente de cura (Endurecedor / Catalisador) alifático indicado para as tintas e vernizes da linha W-THANE SRD 501. Essencial para garantir a cura completa, secagem física, dureza e resistência aos raios UV da tinta poliuretano.",
+      "summary": "Catalisador alifático para tintas poliuretano da linha W-THANE 501.",
+      "category": "catalisadores",
+      "price": 45.90,
+      "image": "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=600&auto=format&fit=crop&q=80",
+      "isPaint": false,
+      "colors": [],
+      "filters": {
+        "secagem": "Reflete a secagem do produto principal",
+        "brilho": "Não aplicável",
+        "embalagem": "Lata 0,9L",
+        "espessura": "Não aplicável",
+        "rendimento": "Relação de mistura 3:1 em volume"
+      },
+      "seo": {
+        "title": "Catalisador WEG W-THANE 501 - Canal Visual",
+        "description": "Catalisador original para tinta poliuretano W-THANE 501 WEG. Garanta o brilho e cura perfeita de sua pintura."
+      },
+      "relatedIds": ["w-thane-srd-501"]
+    },
+    {
+      "id": "cat-w-poxi-322",
+      "name": "Catalisador Epóxi para W-POXI 322",
+      "description": "Agente de cura (Endurecedor / Catalisador) poliamínico indicado para as tintas da linha epóxi W-POXI IND 322. Proporciona excelente resistência química e fixação mecânica ao aço ou concreto.",
+      "summary": "Endurecedor poliamínico específico para a tinta epóxi W-POXI IND 322.",
+      "category": "catalisadores",
+      "price": 39.90,
+      "image": "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=600&auto=format&fit=crop&q=80",
+      "isPaint": false,
+      "colors": [],
+      "filters": {
+        "secagem": "Reflete a secagem do produto principal",
+        "brilho": "Não aplicável",
+        "embalagem": "Lata 0,9L",
+        "espessura": "Não aplicável",
+        "rendimento": "Relação de mistura 4:1 em volume"
+      },
+      "seo": {
+        "title": "Catalisador WEG W-POXI 322 - Canal Visual",
+        "description": "Catalisador epóxi original WEG. Garanta a máxima resistência mecânica e química para sua pintura epóxi."
+      },
+      "relatedIds": ["w-poxi-ind-322"]
+    },
+    {
+      "id": "diluente-pu-5003",
+      "name": "Diluente Poliuretano WEG PU 5003",
+      "description": "Solvente formulado especificamente para diluição e ajuste de viscosidade de tintas da linha poliuretano (PU) da WEG. Auxilia no alastramento, brilho e secagem correta.",
+      "summary": "Diluente de alto desempenho para tintas PU WEG.",
+      "category": "acessorios",
+      "price": 42.00,
+      "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&auto=format&fit=crop&q=80",
+      "isPaint": false,
+      "colors": [],
+      "filters": {
+        "secagem": "Evaporação rápida",
+        "brilho": "Não aplicável",
+        "embalagem": "Galão 0,9L",
+        "espessura": "Não aplicável",
+        "rendimento": "Adicionar de 10% a 20% conforme aplicação"
+      },
+      "seo": {
+        "title": "Diluente WEG PU 5003 - Canal Visual",
+        "description": "Diluente original para tintas PU WEG. Compre na Canal Visual, revendedor autorizado WEG."
+      },
+      "relatedIds": ["w-thane-srd-501"]
+    },
+    {
+      "id": "rolo-la-carneiro",
+      "name": "Rolo de Lã de Carneiro Profissional 23cm Atlas",
+      "description": "Rolo de lã de carneiro indicado para aplicação de tintas industriais, epóxi, poliuretano e tintas acrílicas. Excelente capacidade de retenção de tinta e acabamento uniforme.",
+      "summary": "Rolo de lã de carneiro ideal para tintas industriais de alto desempenho.",
+      "category": "acessorios",
+      "price": 28.50,
+      "image": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=600&auto=format&fit=crop&q=80",
+      "isPaint": false,
+      "colors": [],
+      "filters": {
+        "secagem": "Não aplicável",
+        "brilho": "Não aplicável",
+        "embalagem": "Unidade",
+        "espessura": "Altura da lã: 12mm",
+        "rendimento": "Alta durabilidade"
+      },
+      "seo": {
+        "title": "Rolo de Lã Atlas 23cm para Industrial - Canal Visual",
+        "description": "Rolo profissional Atlas para aplicação de tintas epóxi e poliuretano. Garanta a espessura ideal na pintura."
+      },
+      "relatedIds": ["w-poxi-ind-322", "w-thane-srd-501"]
+    }
+  ],
+  "categories": [
+    { "id": "industrial", "name": "Tintas Industriais", "parentId": null, "order": 1 },
+    { "id": "imobiliaria", "name": "Linha Imobiliária", "parentId": null, "order": 2 },
+    { "id": "catalisadores", "name": "Catalisadores e Endurecedores", "parentId": null, "order": 3 },
+    { "id": "acessorios", "name": "Acessórios e Diluentes", "parentId": null, "order": 4 }
+  ],
+  "pages": [
+    {
+      "id": "home",
+      "title": "Início",
+      "slug": "home",
+      "parentId": null,
+      "order": 1,
+      "content": "Bem-vindo ao Canal Visual, seu revendedor autorizado de tintas industriais e imobiliárias WEG. Oferecemos as melhores soluções de pintura para indústrias, comércios e residências. Navegue pelo nosso catálogo e utilize nosso assistente inteligente de IA para tirar suas dúvidas sobre esquemas de pintura, secagem e rendimento.",
+      "seo": { "title": "Canal Visual - Revendedor Autorizado de Tintas WEG", "description": "Revenda autorizada de tintas WEG industriais e marítimas. Epóxi, Poliuretano, Sintéticos e acessórios com melhor preço e assessoria técnica especializada." }
+    },
+    {
+      "id": "segmentos",
+      "title": "Segmentos de Mercado",
+      "slug": "segmentos",
+      "parentId": null,
+      "order": 2,
+      "content": "A WEG possui uma linha completa de tintas para os mais diversos segmentos industriais. Encontre a solução perfeita para a sua necessidade de proteção anticorrosiva e estética, estruturada de forma hierárquica por nossos especialistas.",
+      "seo": { "title": "Segmentos Industriais de Pintura - Canal Visual", "description": "Soluções de pintura WEG estruturadas por segmentos de mercado: metalmecânico, agrícola, pisos e estruturas." }
+    },
+    {
+      "id": "agro-maq",
+      "title": "Máquinas e Implementos Agrícolas",
+      "slug": "segmentos/maquinas-agricolas",
+      "parentId": "segmentos",
+      "order": 1,
+      "content": "Tintas de secagem rápida e alta resistência para tratores, colheitadeiras, grades aradoras e implementos agrícolas. Proteção sob condições severas de sol, chuva e poeira.",
+      "seo": { "title": "Pintura de Implementos Agrícolas WEG - Canal Visual", "description": "Proteção e acabamento de alta qualidade WEG para tratores, semeadoras e implementos com tintas resistentes ao intemperismo severo." }
+    },
+    {
+      "id": "estruturas-met",
+      "title": "Estruturas Metálicas e Galpões",
+      "slug": "segmentos/estruturas-metalicas",
+      "parentId": "segmentos",
+      "order": 2,
+      "content": "Proteção anticorrosiva durável para pilares de aço, treliças, corrimãos e telhas metálicas de galpões industriais e comerciais. Linhas Epóxi e Poliuretano Alifático.",
+      "seo": { "title": "Tintas para Estruturas Metálicas WEG - Canal Visual", "description": "Soluções anticorrosivas WEG de alta durabilidade para galpões e estruturas metálicas comerciais ou industriais." }
+    },
+    {
+      "id": "pisos-concreto",
+      "title": "Pisos de Concreto e Garagens",
+      "slug": "segmentos/pisos-concreto",
+      "parentId": "segmentos",
+      "order": 3,
+      "content": "Tintas epóxi W-POXI e revestimentos antiderrapantes para pisos de concreto de garagens, oficinas mecânicas, indústrias alimentícias e quadras poliesportivas.",
+      "seo": { "title": "Tinta para Piso de Concreto WEG Epóxi - Canal Visual", "description": "Sistemas de pintura epóxi WEG para proteção e acabamento de alta resistência mecânica para pisos industriais e comerciais." }
+    },
+    {
+      "id": "esquemas",
+      "title": "Esquemas de Pintura",
+      "slug": "esquemas-pintura",
+      "parentId": null,
+      "order": 3,
+      "content": "Nesta seção, você encontra esquemas de pintura completos, desenvolvidos pela equipe técnica da WEG e Canal Visual. Um esquema de pintura descreve os passos corretos de aplicação (Primer, Intermediário e Acabamento) sobre diferentes superfícies (Aço Carbono, Concreto, etc), garantindo a máxima vida útil da pintura.",
+      "seo": { "title": "Esquemas de Pintura Recomendados WEG - Canal Visual", "description": "Esquemas de pintura WEG detalhados para concreto, ferro, aço galvanizado e alumínio. Encontre os passos de aplicação corretos." }
+    }
+  ],
+  "paintSchemes": [
+    {
+      "id": "esquema-piso-industrial",
+      "name": "Esquema Anticorrosivo e Alta Resistência para Piso de Concreto",
+      "surface": "Concreto",
+      "description": "Indicado para pisos industriais, garagens comerciais, oficinas mecânicas de tráfego moderado e galpões de armazenamento. Este esquema utiliza uma demão de primer epóxi selador de concreto para excelente penetração e ancoragem, seguida por duas demãos de esmalte epóxi W-POXI para alto brilho e durabilidade química.",
+      "steps": [
+        {
+          "productId": "w-poxi-ind-322",
+          "productType": "primer",
+          "coats": 1,
+          "interval": "Mínimo 8h, Máximo 24h para próxima demão",
+          "notes": "Diluído em 20% com diluente epóxi para selar os poros do concreto."
+        },
+        {
+          "productId": "w-poxi-ind-322",
+          "productType": "acabamento",
+          "coats": 2,
+          "interval": "Entre demãos: 8 a 12h",
+          "notes": "Aplicação pura ou diluída em no máximo 10%. Acabamento semi-brilho protetivo de fácil limpeza."
+        }
+      ]
+    },
+    {
+      "id": "esquema-aco-intemperismo",
+      "name": "Esquema Anticorrosivo C3 (Intemperismo Externo) sobre Aço Carbono",
+      "surface": "Aço Carbono",
+      "description": "Esquema industrial de pintura ideal para proteção de estruturas metálicas aéreas, coberturas, portões, tanques externos e máquinas expostas ao clima do Brasil. Combina um primer epóxi fosco de alta espessura com acabamento poliuretano acrílico W-THANE para barreira total contra água e raios UV.",
+      "steps": [
+        {
+          "productId": "w-poxi-ind-322",
+          "productType": "primer",
+          "coats": 1,
+          "interval": "8h a 48h",
+          "notes": "Primer epóxi aplicado com 100 micrometros de espessura de película seca para proteção galvânica."
+        },
+        {
+          "productId": "w-thane-srd-501",
+          "productType": "acabamento",
+          "coats": 2,
+          "notes": "Acabamento PU brilhante com excelente retenção de cor e resistência aos raios ultravioleta.",
+          "interval": "Entre demãos: 6h a 24h"
+        }
+      ]
+    }
+  ],
+  "mediaFolders": [
+    { "id": "raizes", "name": "Imagens de Produtos", "parentId": null },
+    { "id": "fichas", "name": "Fichas Técnicas (PDF)", "parentId": null },
+    { "id": "banners", "name": "Banners e Campanhas", "parentId": null }
+  ],
+  "mediaFiles": [
+    {
+      "id": "img-wthane",
+      "name": "w-thane-srd-501-embalagem.jpg",
+      "url": "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&auto=format&fit=crop&q=80",
+      "type": "image",
+      "size": "142 KB",
+      "folderId": "raizes"
+    },
+    {
+      "id": "img-wpoxi",
+      "name": "w-poxi-ind-322-piso.jpg",
+      "url": "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600&auto=format&fit=crop&q=80",
+      "type": "image",
+      "size": "210 KB",
+      "folderId": "raizes"
+    },
+    {
+      "id": "pdf-wthane",
+      "name": "Ficha_Tecnica_W_THANE_501.pdf",
+      "url": "#pdf-wthane",
+      "type": "pdf",
+      "size": "1.2 MB",
+      "folderId": "fichas"
+    },
+    {
+      "id": "pdf-wpoxi",
+      "name": "Ficha_Tecnica_W_POXI_322.pdf",
+      "url": "#pdf-wpoxi",
+      "type": "pdf",
+      "size": "950 KB",
+      "folderId": "fichas"
+    }
+  ],
+  "users": [
+    {
+      "id": "admin-1",
+      "email": "admin@canalvisual.com.br",
+      "name": "Administrador Jules",
+      "role": "admin",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"
+    },
+    {
+      "id": "client-1",
+      "email": "comprador@canalvisual.com.br",
+      "name": "João da Silva Tintas",
+      "role": "client",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ped-001",
+      "userId": "client-1",
+      "userEmail": "comprador@canalvisual.com.br",
+      "userName": "João da Silva Tintas",
+      "date": "2026-07-05T14:30:00.000Z",
+      "items": [
+        {
+          "productId": "w-thane-srd-501",
+          "name": "Esmalte Poliuretano Alifático W-THANE SRD 501",
+          "color": "Azul Segurança RAL 5005",
+          "price": 200.90,
+          "quantity": 2
+        },
+        {
+          "productId": "cat-w-thane-501",
+          "name": "Catalisador PU para W-THANE 501",
+          "price": 45.90,
+          "quantity": 2
+        }
+      ],
+      "total": 493.60,
+      "status": "Entregue",
+      "paymentMethod": "Mercado Pago"
+    }
+  ]
+}
