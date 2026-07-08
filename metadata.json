@@ -1,0 +1,6 @@
+{
+  "name": "Canal Visual - Revenda WEG",
+  "description": "E-commerce de tintas e catalisadores WEG com esquemas de pintura dinâmicos, gerenciamento em árvore (Tree structure) e assistente de IA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
