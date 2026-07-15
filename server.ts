@@ -10,6 +10,15 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Security: Add basic security headers and disable X-Powered-By
+app.disable("x-powered-by");
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -54,7 +63,9 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  // Security: Sanitize the database object to omit sensitive collections
+  const { users, orders, ...sanitizedDb } = db;
+  res.json(sanitizedDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -490,6 +501,12 @@ app.delete("/api/media/files/:id", (req, res) => {
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
+
+  // Security: Basic input validation
+  if (!newOrder.items || !Array.isArray(newOrder.items) || newOrder.items.length === 0) {
+    return res.status(400).json({ error: "O pedido deve conter pelo menos um item." });
+  }
+
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
   newOrder.date = new Date().toISOString();
   db.orders.push(newOrder);
