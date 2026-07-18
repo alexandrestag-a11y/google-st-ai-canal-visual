@@ -1,0 +1,6 @@
+# Sentinel 🛡️ - Security Journal
+
+## 2026-07-18 - [PII Leakage via Unified Database Dump and Lack of Security Hardening Headers]
+**Vulnerability:** The application was exposing the entire raw JSON database, including highly sensitive `users` and `orders` data (such as emails, names, roles, avatars, and transaction records), over the `/api/db` endpoint. Additionally, Express's technology identifying `X-Powered-By` header was fully exposed, and fundamental security hardening headers protecting users from MIME-sniffing, clickjacking, and cross-site scripting were missing.
+**Learning:** Monolithic or unified database dumps designed for ease of development often end up exposing private schemas (like credentials or user histories) in APIs. Omitting proper route isolation and defensive headers leaves client sessions exposed to common web exploits and information disclosure.
+**Prevention:** Always filter out user and order tables from public diagnostic/debug endpoints. Provide strict, granular REST GET routes for public collections instead of single complete database state exposures. Explicitly register custom security middlewares to enforce security-related headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`) and disable Express's identification headers.
