@@ -8,11 +8,20 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
+app.disable("x-powered-by");
 const PORT = 3000;
 
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
+
+// Security Hardening Headers Middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
 
 // Path to the database
 const DB_PATH = path.join(process.cwd(), "server", "db.json");
@@ -54,7 +63,8 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  const { users, orders, ...safeDb } = db;
+  res.json(safeDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -123,6 +133,30 @@ Diretrizes de resposta:
 app.get("/api/products", (req, res) => {
   const db = readDatabase();
   res.json(db.products);
+});
+
+app.get("/api/categories", (req, res) => {
+  res.json(readDatabase().categories);
+});
+
+app.get("/api/pages", (req, res) => {
+  res.json(readDatabase().pages);
+});
+
+app.get("/api/paint-schemes", (req, res) => {
+  res.json(readDatabase().paintSchemes);
+});
+
+app.get("/api/media/folders", (req, res) => {
+  res.json(readDatabase().mediaFolders);
+});
+
+app.get("/api/media/files", (req, res) => {
+  res.json(readDatabase().mediaFiles);
+});
+
+app.get("/api/orders", (req, res) => {
+  res.json(readDatabase().orders);
 });
 
 app.post("/api/products", (req, res) => {
@@ -490,6 +524,9 @@ app.delete("/api/media/files/:id", (req, res) => {
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
+  if (!newOrder || !Array.isArray(newOrder.items) || newOrder.items.length === 0) {
+    return res.status(400).json({ error: "O pedido deve conter pelo menos um item." });
+  }
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
   newOrder.date = new Date().toISOString();
   db.orders.push(newOrder);
