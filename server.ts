@@ -10,9 +10,20 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable X-Powered-By header
+app.disable("x-powered-by");
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
+
+// Security hardening headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
 
 // Path to the database
 const DB_PATH = path.join(process.cwd(), "server", "db.json");
@@ -51,11 +62,23 @@ const ai = new GoogleGenAI({
 
 // --- API Endpoints ---
 
-// 1. Unified database endpoint for React initial state
+// 1. Unified database endpoint for React initial state - sanitized to prevent PII leakage
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  const { users, orders, ...sanitizedDb } = db;
+  res.json(sanitizedDb);
 });
+
+// GET endpoints for React frontend integration
+app.get("/api/categories", (req, res) => res.json(readDatabase().categories || []));
+app.get("/api/pages", (req, res) => res.json(readDatabase().pages || []));
+app.get("/api/paint-schemes", (req, res) => res.json(readDatabase().paintSchemes || []));
+app.get("/api/media/folders", (req, res) => res.json(readDatabase().mediaFolders || []));
+app.get("/api/media/files", (req, res) => res.json(readDatabase().mediaFiles || []));
+// ⚠️ SECURITY WARNING: In a production environment, this endpoint must be protected
+// by authentication/authorization middleware (e.g., JWT role check) to prevent PII exposure.
+// Exposed here solely for demo-app frontend alignment.
+app.get("/api/orders", (req, res) => res.json(readDatabase().orders || []));
 
 // 2. Chatbot Gemini AI Technical Assistant
 app.post("/api/gemini/chat", async (req, res) => {
@@ -486,10 +509,14 @@ app.delete("/api/media/files/:id", (req, res) => {
   res.json({ success: true });
 });
 
-// 9. Orders Placement
+// 9. Orders Placement with basic input validation
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
+  // Input validation for orders array to prevent blank or faulty submissions
+  if (!newOrder || !Array.isArray(newOrder.items) || newOrder.items.length === 0) {
+    return res.status(400).json({ error: "O pedido deve conter pelo menos um item." });
+  }
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
   newOrder.date = new Date().toISOString();
   db.orders.push(newOrder);
