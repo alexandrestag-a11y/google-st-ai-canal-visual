@@ -1,0 +1,6 @@
+# Sentinel Security Journal
+
+## 2026-07-06 - Monolithic Flat-File Database PII Exposure Pattern
+**Vulnerability:** Exposing the raw JSON flat-file database object over a public unauthenticated `/api/db` endpoint, leaking administrative `users` and purchase history `orders` collections containing critical customer PII.
+**Learning:** The application uses a single monolithic `server/db.json` file as its entire data store. Because both public catalog data and private customer/admin data share the same flat-file JSON structure, a single query or unified endpoint like `/api/db` returns the entire file to the frontend. Exposing this raw object directly resulted in silent, massive exposure of sensitive personal data (names, emails, physical/mock addresses, purchases).
+**Prevention:** Always isolate sensitive administrative collections from public frontend requests. If a unified database endpoint is used, explicitly sanitize and destructure the loaded database object to omit or blacklist sensitive keys (e.g., `const { users, orders, ...publicDb } = db`) before transmitting it over HTTP. Additionally, mask individual fields (such as regex-masking emails and names) on endpoints meant for non-owner viewing.
