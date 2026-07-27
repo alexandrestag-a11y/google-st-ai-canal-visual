@@ -10,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable X-Powered-By header
+app.disable("x-powered-by");
+
+// Security hardening headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -54,7 +65,8 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  const { users, orders, ...sanitizedDb } = db;
+  res.json(sanitizedDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -334,6 +346,11 @@ app.post("/api/products-csv/import", (req, res) => {
 });
 
 // 5. Categories Tree CRUD
+app.get("/api/categories", (req, res) => {
+  const db = readDatabase();
+  res.json(db.categories || []);
+});
+
 app.post("/api/categories", (req, res) => {
   const db = readDatabase();
   const category = req.body;
@@ -371,6 +388,11 @@ app.delete("/api/categories/:id", (req, res) => {
 });
 
 // 6. Pages Tree CMS CRUD
+app.get("/api/pages", (req, res) => {
+  const db = readDatabase();
+  res.json(db.pages || []);
+});
+
 app.post("/api/pages", (req, res) => {
   const db = readDatabase();
   const page = req.body;
@@ -408,6 +430,11 @@ app.delete("/api/pages/:id", (req, res) => {
 });
 
 // 7. Paint Schemes CRUD
+app.get("/api/paint-schemes", (req, res) => {
+  const db = readDatabase();
+  res.json(db.paintSchemes || []);
+});
+
 app.post("/api/paint-schemes", (req, res) => {
   const db = readDatabase();
   const scheme = req.body;
@@ -441,6 +468,16 @@ app.delete("/api/paint-schemes/:id", (req, res) => {
 });
 
 // 8. Media Library Folder & Files
+app.get("/api/media/folders", (req, res) => {
+  const db = readDatabase();
+  res.json(db.mediaFolders || []);
+});
+
+app.get("/api/media/files", (req, res) => {
+  const db = readDatabase();
+  res.json(db.mediaFiles || []);
+});
+
 app.post("/api/media/folders", (req, res) => {
   const db = readDatabase();
   const folder = req.body;
@@ -486,10 +523,44 @@ app.delete("/api/media/files/:id", (req, res) => {
   res.json({ success: true });
 });
 
+// Helper functions to mask userEmail and userName
+function maskName(name: string): string {
+  if (!name) return "";
+  const parts = name.split(" ");
+  return parts.map(part => {
+    if (part.length <= 2) return part[0] + "*".repeat(part.length - 1);
+    return part[0] + "*".repeat(part.length - 2) + part[part.length - 1];
+  }).join(" ");
+}
+
+function maskEmail(email: string): string {
+  if (!email) return "";
+  const [local, domain] = email.split("@");
+  if (!domain) return "***";
+  const maskedLocal = local.length > 2
+    ? local[0] + "*".repeat(local.length - 2) + local[local.length - 1]
+    : "*".repeat(local.length);
+  return `${maskedLocal}@${domain}`;
+}
+
 // 9. Orders Placement
+app.get("/api/orders", (req, res) => {
+  const db = readDatabase();
+  const orders = db.orders || [];
+  const sanitizedOrders = orders.map((order: any) => ({
+    ...order,
+    userEmail: maskEmail(order.userEmail),
+    userName: maskName(order.userName),
+  }));
+  res.json(sanitizedOrders);
+});
+
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
+  if (!newOrder || !Array.isArray(newOrder.items) || newOrder.items.length === 0) {
+    return res.status(400).json({ error: "Carrinho de compras vazio ou inválido." });
+  }
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
   newOrder.date = new Date().toISOString();
   db.orders.push(newOrder);
