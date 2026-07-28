@@ -1,0 +1,4 @@
+## 2026-07-28 - [Unified DB Endpoint PII Exposure and Missing REST Endpoints]
+**Vulnerability:** Exposing plain-text customer PII (e.g., names, emails, and order histories) directly to public clients via the `/api/db` endpoint, combined with missing dedicated GET endpoints for collections, which caused clients to fetch full database states.
+**Learning:** Monolithic db endpoints often leak sensitive internal tables (such as users and orders) when designed as quick workarounds for state hydration. Additionally, missing specific resource endpoints forces the frontend to rely on these insecure dump endpoints or fail during parse steps due to HTML/wildcard fallback responses.
+**Prevention:** Always filter out authentication, user identity, and order log collections from unified state endpoints on the server. Implement dedicated, PII-masked read endpoints for entities that must be rendered by the UI.
