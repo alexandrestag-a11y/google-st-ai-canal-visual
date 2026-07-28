@@ -10,6 +10,15 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Security Hardening: Disable X-Powered-By header and add security headers
+app.disable("x-powered-by");
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -51,10 +60,13 @@ const ai = new GoogleGenAI({
 
 // --- API Endpoints ---
 
-// 1. Unified database endpoint for React initial state
+// 1. Unified database endpoint for React initial state - Sanitized to prevent PII exposure
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  const sanitizedDb = { ...db };
+  delete sanitizedDb.users;
+  delete sanitizedDb.orders;
+  res.json(sanitizedDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -486,10 +498,48 @@ app.delete("/api/media/files/:id", (req, res) => {
   res.json({ success: true });
 });
 
-// 9. Orders Placement
+// 9. Resource GET Endpoints for alignment with frontend API data requirements
+app.get("/api/categories", (req, res) => {
+  res.json(readDatabase().categories || []);
+});
+
+app.get("/api/pages", (req, res) => {
+  res.json(readDatabase().pages || []);
+});
+
+app.get("/api/paint-schemes", (req, res) => {
+  res.json(readDatabase().paintSchemes || []);
+});
+
+app.get("/api/media/folders", (req, res) => {
+  res.json(readDatabase().mediaFolders || []);
+});
+
+app.get("/api/media/files", (req, res) => {
+  res.json(readDatabase().mediaFiles || []);
+});
+
+app.get("/api/orders", (req, res) => {
+  const orders = readDatabase().orders || [];
+  // Mask customer PII fields like userEmail and userName before returning to prevent exposure
+  const sanitizedOrders = orders.map((o: any) => ({
+    ...o,
+    userEmail: o.userEmail ? o.userEmail.replace(/(.{2})(.*)(@.*)/, "$1***$3") : undefined,
+    userName: o.userName ? o.userName.replace(/(.{2})(.*)/, "$1***") : undefined,
+  }));
+  res.json(sanitizedOrders);
+});
+
+// 10. Orders Placement
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
+
+  // Basic input validation: ensure items is a valid, non-empty array
+  if (!newOrder || !newOrder.items || !Array.isArray(newOrder.items) || newOrder.items.length === 0) {
+    return res.status(400).json({ error: "Carrinho de compras vazio ou inválido." });
+  }
+
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
   newOrder.date = new Date().toISOString();
   db.orders.push(newOrder);
