@@ -10,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable Express X-Powered-By header for security
+app.disable("x-powered-by");
+
+// Setup security hardening headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -54,7 +65,9 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  // Sanitize the database object to omit sensitive users and orders collections to prevent PII exposure
+  const { users, orders, ...sanitizedDb } = db;
+  res.json(sanitizedDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -334,6 +347,11 @@ app.post("/api/products-csv/import", (req, res) => {
 });
 
 // 5. Categories Tree CRUD
+app.get("/api/categories", (req, res) => {
+  const db = readDatabase();
+  res.json(db.categories || []);
+});
+
 app.post("/api/categories", (req, res) => {
   const db = readDatabase();
   const category = req.body;
@@ -371,6 +389,11 @@ app.delete("/api/categories/:id", (req, res) => {
 });
 
 // 6. Pages Tree CMS CRUD
+app.get("/api/pages", (req, res) => {
+  const db = readDatabase();
+  res.json(db.pages || []);
+});
+
 app.post("/api/pages", (req, res) => {
   const db = readDatabase();
   const page = req.body;
@@ -408,6 +431,11 @@ app.delete("/api/pages/:id", (req, res) => {
 });
 
 // 7. Paint Schemes CRUD
+app.get("/api/paint-schemes", (req, res) => {
+  const db = readDatabase();
+  res.json(db.paintSchemes || []);
+});
+
 app.post("/api/paint-schemes", (req, res) => {
   const db = readDatabase();
   const scheme = req.body;
@@ -441,6 +469,11 @@ app.delete("/api/paint-schemes/:id", (req, res) => {
 });
 
 // 8. Media Library Folder & Files
+app.get("/api/media/folders", (req, res) => {
+  const db = readDatabase();
+  res.json(db.mediaFolders || []);
+});
+
 app.post("/api/media/folders", (req, res) => {
   const db = readDatabase();
   const folder = req.body;
@@ -467,6 +500,11 @@ app.delete("/api/media/folders/:id", (req, res) => {
   res.json({ success: true });
 });
 
+app.get("/api/media/files", (req, res) => {
+  const db = readDatabase();
+  res.json(db.mediaFiles || []);
+});
+
 app.post("/api/media/files", (req, res) => {
   const db = readDatabase();
   const file = req.body;
@@ -487,6 +525,27 @@ app.delete("/api/media/files/:id", (req, res) => {
 });
 
 // 9. Orders Placement
+app.get("/api/orders", (req, res) => {
+  const db = readDatabase();
+  // Mask PII fields to protect buyer privacy (e.g., email and full name)
+  const sanitizedOrders = (db.orders || []).map((o: any) => {
+    const maskString = (str: string) => {
+      if (!str) return "";
+      if (str.includes("@")) {
+        const [parts, domain] = str.split("@");
+        return parts[0] + "***@" + domain;
+      }
+      return str.split(" ").map(word => word[0] + "***").join(" ");
+    };
+    return {
+      ...o,
+      userName: maskString(o.userName),
+      userEmail: maskString(o.userEmail),
+    };
+  });
+  res.json(sanitizedOrders);
+});
+
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
