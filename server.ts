@@ -10,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable X-Powered-By header for security
+app.disable("x-powered-by");
+
+// Security hardening headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -54,7 +65,9 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  // Sanitize db object to exclude users and orders to protect PII exposure
+  const { users, orders, ...sanitizedDb } = db;
+  res.json(sanitizedDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -487,7 +500,39 @@ app.delete("/api/media/files/:id", (req, res) => {
 });
 
 // 9. Orders Placement
+app.get("/api/orders", (req, res) => {
+  const db = readDatabase();
+  const maskedOrders = (db.orders || []).map((order: any) => {
+    let maskedName = "Cliente";
+    if (order.userName) {
+      maskedName = order.userName.split(" ").map((p: string) => p.length > 1 ? p[0] + "***" : p).join(" ");
+    }
+    let maskedEmail = "";
+    if (order.userEmail) {
+      const parts = order.userEmail.split("@");
+      if (parts.length === 2) {
+        const local = parts[0];
+        const domain = parts[1];
+        const maskedLocal = local.length > 2 ? local.substring(0, 2) + "***" : local + "***";
+        maskedEmail = `${maskedLocal}@${domain}`;
+      } else {
+        maskedEmail = order.userEmail;
+      }
+    }
+    return {
+      ...order,
+      userName: maskedName,
+      userEmail: maskedEmail
+    };
+  });
+  res.json(maskedOrders);
+});
+
 app.post("/api/orders", (req, res) => {
+  // Validate order has non-empty items array
+  if (!req.body || !Array.isArray(req.body.items) || req.body.items.length === 0) {
+    return res.status(400).json({ error: "O pedido precisa conter itens válidos." });
+  }
   const db = readDatabase();
   const newOrder = req.body;
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
