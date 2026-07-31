@@ -10,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable X-Powered-By header
+app.disable("x-powered-by");
+
+// Apply security hardening headers manually
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -49,12 +60,30 @@ const ai = new GoogleGenAI({
   },
 });
 
+// Helper to mask emails securely while handling short local parts
+function maskEmail(email: string): string {
+  if (!email) return "";
+  const parts = email.split("@");
+  if (parts.length !== 2) return email;
+  const [local, domain] = parts;
+  if (local.length <= 2) {
+    return local[0] + "***@" + domain;
+  }
+  return local.slice(0, 2) + "***@" + domain;
+}
+
 // --- API Endpoints ---
 
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  // Sanitize the database response by returning empty arrays for sensitive 'users' and 'orders' collections (PII protection and frontend compatibility)
+  const sanitizedDb = {
+    ...db,
+    users: [],
+    orders: []
+  };
+  res.json(sanitizedDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -123,6 +152,31 @@ Diretrizes de resposta:
 app.get("/api/products", (req, res) => {
   const db = readDatabase();
   res.json(db.products);
+});
+
+app.get("/api/categories", (req, res) => {
+  const db = readDatabase();
+  res.json(db.categories || []);
+});
+
+app.get("/api/pages", (req, res) => {
+  const db = readDatabase();
+  res.json(db.pages || []);
+});
+
+app.get("/api/paint-schemes", (req, res) => {
+  const db = readDatabase();
+  res.json(db.paintSchemes || []);
+});
+
+app.get("/api/media/folders", (req, res) => {
+  const db = readDatabase();
+  res.json(db.mediaFolders || []);
+});
+
+app.get("/api/media/files", (req, res) => {
+  const db = readDatabase();
+  res.json(db.mediaFiles || []);
 });
 
 app.post("/api/products", (req, res) => {
@@ -487,6 +541,26 @@ app.delete("/api/media/files/:id", (req, res) => {
 });
 
 // 9. Orders Placement
+app.get("/api/orders", (req, res) => {
+  const db = readDatabase();
+  const orders = db.orders || [];
+  // Sanitized to mask customer PII fields like userEmail and userName (prevent sensitive data exposure)
+  const sanitizedOrders = orders.map((order: any) => {
+    const sanitized = { ...order };
+    if (sanitized.userEmail) {
+      sanitized.userEmail = maskEmail(sanitized.userEmail);
+    }
+    if (sanitized.userName) {
+      sanitized.userName = sanitized.userName.split(" ").map((part: string) => {
+        if (part.length <= 1) return part;
+        return part[0] + "***";
+      }).join(" ");
+    }
+    return sanitized;
+  });
+  res.json(sanitizedOrders);
+});
+
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
