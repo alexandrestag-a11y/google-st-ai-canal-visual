@@ -1,0 +1,4 @@
+## 2026-07-07 - Information Disclosure via Complete Database Dump in API Endpoint
+**Vulnerability:** The unified database endpoint `/api/db` returned the entire contents of `db.json` directly to any user. This exposed highly sensitive PII (Personally Identifiable Information), including customer names, raw emails, complete order records, and user lists.
+**Learning:** For convenience during prototyping or development, developers often create general "dump" or "unified state" API endpoints that serialize the entire database to the client. This bypasses endpoint-level security boundaries and results in severe information disclosure.
+**Prevention:** Avoid blanket-serialization endpoints. If a unified state endpoint is absolutely necessary, explicitly project only non-sensitive schema collections or sanitize/exclude tables containing PII (like users and orders). Ensure data is strictly filtered and projected before leaving the server.

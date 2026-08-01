@@ -10,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable X-Powered-By to prevent technology fingerprinting
+app.disable("x-powered-by");
+
+// Setup security hardening headers manually
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -51,10 +62,65 @@ const ai = new GoogleGenAI({
 
 // --- API Endpoints ---
 
-// 1. Unified database endpoint for React initial state
+// 1. Unified database endpoint for React initial state - Sanitized to prevent PII leakage
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  const sanitizedOrders = (db.orders || []).map((o: any) => ({
+    ...o,
+    userEmail: o.userEmail ? o.userEmail.replace(/^(.)(.*)(@.*)$/, "$1***$3") : "",
+    userName: o.userName ? o.userName.replace(/^(.).*(.)$/, "$1***$2") : ""
+  }));
+  const sanitizedUsers = (db.users || []).map((u: any) => ({
+    ...u,
+    email: u.email ? u.email.replace(/^(.)(.*)(@.*)$/, "$1***$3") : ""
+  }));
+  res.json({
+    ...db,
+    users: sanitizedUsers,
+    orders: sanitizedOrders
+  });
+});
+
+// Missing GET endpoints to support frontend queries directly
+app.get("/api/categories", (req, res) => {
+  res.json(readDatabase().categories || []);
+});
+
+app.get("/api/pages", (req, res) => {
+  res.json(readDatabase().pages || []);
+});
+
+app.get("/api/paint-schemes", (req, res) => {
+  res.json(readDatabase().paintSchemes || []);
+});
+
+app.get("/api/media/folders", (req, res) => {
+  res.json(readDatabase().mediaFolders || []);
+});
+
+app.get("/api/media/files", (req, res) => {
+  res.json(readDatabase().mediaFiles || []);
+});
+
+// GET Orders endpoint with customer PII masking for safety
+app.get("/api/orders", (req, res) => {
+  const db = readDatabase();
+  const sanitizedOrders = (db.orders || []).map((o: any) => ({
+    ...o,
+    userEmail: o.userEmail ? o.userEmail.replace(/^(.)(.*)(@.*)$/, "$1***$3") : "",
+    userName: o.userName ? o.userName.replace(/^(.).*(.)$/, "$1***$2") : ""
+  }));
+  res.json(sanitizedOrders);
+});
+
+// GET Users endpoint with PII masking for safety
+app.get("/api/users", (req, res) => {
+  const db = readDatabase();
+  const sanitizedUsers = (db.users || []).map((u: any) => ({
+    ...u,
+    email: u.email ? u.email.replace(/^(.)(.*)(@.*)$/, "$1***$3") : ""
+  }));
+  res.json(sanitizedUsers);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
@@ -486,10 +552,13 @@ app.delete("/api/media/files/:id", (req, res) => {
   res.json({ success: true });
 });
 
-// 9. Orders Placement
+// 9. Orders Placement - Input validated to ensure valid, non-empty items
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
+  if (!newOrder || !Array.isArray(newOrder.items) || newOrder.items.length === 0) {
+    return res.status(400).json({ error: "Carrinho de compras vazio ou inválido." });
+  }
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
   newOrder.date = new Date().toISOString();
   db.orders.push(newOrder);
