@@ -1,0 +1,4 @@
+## 2026-08-02 - [PII Sensitive Data Leakage via Unauthenticated `/api/db` Endpoint]
+**Vulnerability:** The application was exposing complete user lists and order records (including cleartext PII like real names and emails) through the `/api/db` endpoint without any access control or masking.
+**Learning:** This occurred because a single raw database-dump endpoint was created to bootstrap client-side application state quickly without considering data classification and privacy requirements (GDPR/LGPD).
+**Prevention:** Ensure any endpoint returning composite or user-related collections always filters out or masks PII fields like emails, names, and phone numbers by default using clean sanitization utilities, unless the client session is explicitly authenticated and authorized to view that data.
