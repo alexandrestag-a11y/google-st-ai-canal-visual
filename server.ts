@@ -51,11 +51,39 @@ const ai = new GoogleGenAI({
 
 // --- API Endpoints ---
 
-// 1. Unified database endpoint for React initial state
-app.get("/api/db", (req, res) => {
-  const db = readDatabase();
-  res.json(db);
+// PII Sanitization Helpers
+const maskEmail = (email: string): string => {
+  if (!email || !email.includes("@")) return email;
+  const [local, domain] = email.split("@");
+  return local.length <= 2
+    ? `${local[0]}***@${domain}`
+    : `${local[0]}${"*".repeat(local.length - 2)}${local[local.length - 1]}@${domain}`;
+};
+
+const maskName = (name: string): string => {
+  if (!name) return name;
+  return name.split(" ").map(p => p.length <= 2 ? p : `${p[0]}${"*".repeat(p.length - 2)}${p[p.length - 1]}`).join(" ");
+};
+
+const sanitizeDb = (db: any) => ({
+  ...db,
+  users: (db.users || []).map((u: any) => ({ ...u, email: maskEmail(u.email), name: maskName(u.name) })),
+  orders: (db.orders || []).map((o: any) => ({ ...o, userEmail: maskEmail(o.userEmail), userName: maskName(o.userName) })),
 });
+
+// 1. Unified database endpoint for React initial state (Sanitized to protect user/customer PII)
+app.get("/api/db", (req, res) => {
+  res.json(sanitizeDb(readDatabase()));
+});
+
+// GET endpoints for frontend application state alignments
+app.get("/api/categories", (req, res) => res.json(readDatabase().categories || []));
+app.get("/api/pages", (req, res) => res.json(readDatabase().pages || []));
+app.get("/api/paint-schemes", (req, res) => res.json(readDatabase().paintSchemes || []));
+app.get("/api/media/folders", (req, res) => res.json(readDatabase().mediaFolders || []));
+app.get("/api/media/files", (req, res) => res.json(readDatabase().mediaFiles || []));
+app.get("/api/orders", (req, res) => res.json(sanitizeDb(readDatabase()).orders || []));
+app.get("/api/users", (req, res) => res.json(sanitizeDb(readDatabase()).users || []));
 
 // 2. Chatbot Gemini AI Technical Assistant
 app.post("/api/gemini/chat", async (req, res) => {
