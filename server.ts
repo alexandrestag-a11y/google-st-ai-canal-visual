@@ -10,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable X-Powered-By header
+app.disable("x-powered-by");
+
+// Setup security hardening headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -49,13 +60,48 @@ const ai = new GoogleGenAI({
   },
 });
 
+// PII Masking utility functions to protect sensitive personal data
+const maskEmail = (email: string) => {
+  if (!email || !email.includes("@")) return "***";
+  const [local, domain] = email.split("@");
+  return `${local[0]}***@***.${domain.split(".").pop()}`;
+};
+
+const maskName = (name: string) => {
+  if (!name) return "***";
+  const parts = name.split(" ");
+  return parts.map((p, idx) => idx === 0 && p.length > 0 ? `${p[0]}***` : "***").join(" ");
+};
+
 // --- API Endpoints ---
 
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  const maskedUsers = (db.users || []).map((u: any) => ({ ...u, email: maskEmail(u.email), name: maskName(u.name) }));
+  const maskedOrders = (db.orders || []).map((o: any) => ({ ...o, userEmail: maskEmail(o.userEmail), userName: maskName(o.userName) }));
+  res.json({ ...db, users: maskedUsers, orders: maskedOrders });
 });
+
+// GET /api/orders and GET /api/users endpoints with PII masking to prevent exposure
+app.get("/api/orders", (req, res) => {
+  const db = readDatabase();
+  const maskedOrders = (db.orders || []).map((o: any) => ({ ...o, userEmail: maskEmail(o.userEmail), userName: maskName(o.userName) }));
+  res.json(maskedOrders);
+});
+
+app.get("/api/users", (req, res) => {
+  const db = readDatabase();
+  const maskedUsers = (db.users || []).map((u: any) => ({ ...u, email: maskEmail(u.email), name: maskName(u.name) }));
+  res.json(maskedUsers);
+});
+
+// GET endpoints for other resources to align with frontend and prevent HTML SPA fallbacks
+app.get("/api/categories", (req, res) => res.json(readDatabase().categories || []));
+app.get("/api/pages", (req, res) => res.json(readDatabase().pages || []));
+app.get("/api/paint-schemes", (req, res) => res.json(readDatabase().paintSchemes || []));
+app.get("/api/media/folders", (req, res) => res.json(readDatabase().mediaFolders || []));
+app.get("/api/media/files", (req, res) => res.json(readDatabase().mediaFiles || []));
 
 // 2. Chatbot Gemini AI Technical Assistant
 app.post("/api/gemini/chat", async (req, res) => {
@@ -490,6 +536,12 @@ app.delete("/api/media/files/:id", (req, res) => {
 app.post("/api/orders", (req, res) => {
   const db = readDatabase();
   const newOrder = req.body;
+
+  // Basic input validation to ensure valid, non-empty items array
+  if (!newOrder || !Array.isArray(newOrder.items) || newOrder.items.length === 0) {
+    return res.status(400).json({ error: "O pedido deve conter pelo menos um item." });
+  }
+
   newOrder.id = "ped-" + Math.floor(1000 + Math.random() * 9000);
   newOrder.date = new Date().toISOString();
   db.orders.push(newOrder);
