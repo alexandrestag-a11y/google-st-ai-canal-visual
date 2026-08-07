@@ -10,6 +10,18 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// 🛡️ Sentinel: Disable default X-Powered-By header to prevent tech stack disclosure
+app.disable("x-powered-by");
+
+// 🛡️ Sentinel: Secure response headers middleware
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
