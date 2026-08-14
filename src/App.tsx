@@ -75,7 +75,11 @@ export default function App() {
         fetch("/api/paint-schemes").then((r) => r.json()),
         fetch("/api/media/folders").then((r) => r.json()),
         fetch("/api/media/files").then((r) => r.json()),
-        fetch("/api/orders").then((r) => r.json()),
+        fetch("/api/orders", {
+          headers: {
+            "X-User-Role": activeUser?.role || "client"
+          }
+        }).then((r) => r.json()),
       ]);
 
       setProducts(pRes || []);
@@ -92,7 +96,7 @@ export default function App() {
 
   useEffect(() => {
     refreshDatabase();
-  }, []);
+  }, [activeUser]);
 
   // Sync admin mode state if user profile is switched
   const handleUserSelect = (u: User) => {

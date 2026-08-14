@@ -10,6 +10,18 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// Disable X-Powered-By header
+app.disable("x-powered-by");
+
+// Setup secure HTTP headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  next();
+});
+
 // Setup parser for JSON and text payloads
 app.use(express.json({ limit: "10mb" }));
 app.use(express.text({ limit: "10mb" }));
@@ -54,7 +66,31 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  const safeDb = { ...db };
+  delete safeDb.users;
+  delete safeDb.orders;
+  res.json(safeDb);
+});
+
+// GET endpoint for orders list with PII sanitization/authorization
+app.get("/api/orders", (req, res) => {
+  const db = readDatabase();
+  const orders = db.orders || [];
+
+  // Check user role header for administrative access
+  const userRole = req.headers["x-user-role"] || req.query.role;
+  if (userRole === "admin") {
+    return res.json(orders);
+  }
+
+  // Sanitize/mask sensitive PII for non-admin requests
+  const sanitizedOrders = orders.map((o: any) => ({
+    ...o,
+    userName: o.userName ? o.userName.replace(/(?<=.).(?=.+)/g, "*") : "Cliente",
+    userEmail: o.userEmail ? o.userEmail.replace(/(?<=.).(?=.+@)/g, "*") : "Email ocultado",
+  }));
+
+  res.json(sanitizedOrders);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
