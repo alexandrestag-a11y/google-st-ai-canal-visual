@@ -54,7 +54,9 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
-  res.json(db);
+  // SECURITY: Sanitize response to exclude sensitive tables (PII and order details)
+  const { users, orders, ...safeDb } = db;
+  res.json(safeDb);
 });
 
 // 2. Chatbot Gemini AI Technical Assistant
