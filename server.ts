@@ -54,6 +54,10 @@ const ai = new GoogleGenAI({
 // 1. Unified database endpoint for React initial state
 app.get("/api/db", (req, res) => {
   const db = readDatabase();
+  // Sanitize sensitive user data before returning DB state to client
+  if (Array.isArray(db.users)) {
+    db.users = db.users.map(({ password, token, secret, ...user }: any) => user);
+  }
   res.json(db);
 });
 
