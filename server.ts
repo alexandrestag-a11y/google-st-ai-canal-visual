@@ -497,17 +497,32 @@ app.post("/api/orders", (req, res) => {
   res.status(201).json(newOrder);
 });
 
+// Helper to escape XML special characters to prevent XML injection/XSS in dynamic sitemaps
+function escapeXml(unsafe: any): string {
+  if (unsafe == null) return "";
+  return String(unsafe).replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case "&": return "&amp;";
+      case "'": return "&apos;";
+      case '"': return "&quot;";
+      default: return c;
+    }
+  });
+}
+
 // 10. Dynamic SEO Sitemap & Robots
 app.get("/sitemap.xml", (req, res) => {
   const db = readDatabase();
-  const appUrl = process.env.APP_URL || "https://canalvisual.com.br";
+  const appUrl = escapeXml(process.env.APP_URL || "https://canalvisual.com.br");
   
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
   // Dynamic pages from CMS page tree
   db.pages.forEach((page: any) => {
-    const slugPath = page.slug === "home" ? "" : `/${page.slug}`;
+    const slugPath = page.slug === "home" ? "" : `/${escapeXml(page.slug)}`;
     xml += `
   <url>
     <loc>${appUrl}${slugPath}</loc>
@@ -520,7 +535,7 @@ app.get("/sitemap.xml", (req, res) => {
   db.products.forEach((p: any) => {
     xml += `
   <url>
-    <loc>${appUrl}/produtos/${p.id}</loc>
+    <loc>${appUrl}/produtos/${escapeXml(p.id)}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;
@@ -530,7 +545,7 @@ app.get("/sitemap.xml", (req, res) => {
   db.paintSchemes.forEach((s: any) => {
     xml += `
   <url>
-    <loc>${appUrl}/esquemas-pintura/${s.id}</loc>
+    <loc>${appUrl}/esquemas-pintura/${escapeXml(s.id)}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
