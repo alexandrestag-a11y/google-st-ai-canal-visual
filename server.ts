@@ -498,46 +498,43 @@ app.post("/api/orders", (req, res) => {
 });
 
 // 10. Dynamic SEO Sitemap & Robots
+// Helper to escape dynamic values for safe XML inclusion against XML injection / XSS
+function escapeXml(unsafe: string): string {
+  return String(unsafe).replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case "&": return "&amp;";
+      case "'": return "&apos;";
+      case '"': return "&quot;";
+      default: return c;
+    }
+  });
+}
+
 app.get("/sitemap.xml", (req, res) => {
   const db = readDatabase();
   const appUrl = process.env.APP_URL || "https://canalvisual.com.br";
   
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
   // Dynamic pages from CMS page tree
   db.pages.forEach((page: any) => {
     const slugPath = page.slug === "home" ? "" : `/${page.slug}`;
-    xml += `
-  <url>
-    <loc>${appUrl}${slugPath}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>${page.slug === "home" ? "1.0" : "0.8"}</priority>
-  </url>`;
+    xml += `\n  <url>\n    <loc>${escapeXml(`${appUrl}${slugPath}`)}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>${page.slug === "home" ? "1.0" : "0.8"}</priority>\n  </url>`;
   });
 
   // Dynamic products from Catalogue
   db.products.forEach((p: any) => {
-    xml += `
-  <url>
-    <loc>${appUrl}/produtos/${p.id}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`;
+    xml += `\n  <url>\n    <loc>${escapeXml(`${appUrl}/produtos/${p.id}`)}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
   });
 
   // Dynamic paint schemes
   db.paintSchemes.forEach((s: any) => {
-    xml += `
-  <url>
-    <loc>${appUrl}/esquemas-pintura/${s.id}</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`;
+    xml += `\n  <url>\n    <loc>${escapeXml(`${appUrl}/esquemas-pintura/${s.id}`)}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
   });
 
-  xml += `
-</urlset>`;
+  xml += `\n</urlset>`;
 
   res.setHeader("Content-Type", "application/xml; charset=utf-8");
   res.send(xml);
