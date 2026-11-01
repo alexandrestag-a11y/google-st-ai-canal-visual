@@ -39,6 +39,17 @@ function writeDatabase(data: any) {
   }
 }
 
+// Security helper: sanitize dynamic variables to prevent XML injection & XSS in sitemap.xml
+function escapeXml(unsafe: any): string {
+  if (unsafe === null || unsafe === undefined) return "";
+  return String(unsafe)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 // Initialize Gemini Client
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "dummy-key",
@@ -508,9 +519,10 @@ app.get("/sitemap.xml", (req, res) => {
   // Dynamic pages from CMS page tree
   db.pages.forEach((page: any) => {
     const slugPath = page.slug === "home" ? "" : `/${page.slug}`;
+    const cleanUrl = escapeXml(`${appUrl}${slugPath}`);
     xml += `
   <url>
-    <loc>${appUrl}${slugPath}</loc>
+    <loc>${cleanUrl}</loc>
     <changefreq>weekly</changefreq>
     <priority>${page.slug === "home" ? "1.0" : "0.8"}</priority>
   </url>`;
@@ -518,9 +530,10 @@ app.get("/sitemap.xml", (req, res) => {
 
   // Dynamic products from Catalogue
   db.products.forEach((p: any) => {
+    const cleanUrl = escapeXml(`${appUrl}/produtos/${p.id}`);
     xml += `
   <url>
-    <loc>${appUrl}/produtos/${p.id}</loc>
+    <loc>${cleanUrl}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;
@@ -528,9 +541,10 @@ app.get("/sitemap.xml", (req, res) => {
 
   // Dynamic paint schemes
   db.paintSchemes.forEach((s: any) => {
+    const cleanUrl = escapeXml(`${appUrl}/esquemas-pintura/${s.id}`);
     xml += `
   <url>
-    <loc>${appUrl}/esquemas-pintura/${s.id}</loc>
+    <loc>${cleanUrl}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
