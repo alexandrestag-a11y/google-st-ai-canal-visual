@@ -1,0 +1,4 @@
+## 2025-05-18 - XML Injection and XSS Prevention in Sitemap Generation
+**Vulnerability:** Dynamic route parameters and CMS slugs/identifiers were interpolated directly into the raw XML response of `/sitemap.xml` without XML entity encoding or sanitization, exposing the endpoint to XML injection and stored Cross-Site Scripting (XSS) if malicious slugs or product IDs were crafted.
+**Learning:** Even internal or CMS-driven sitemaps that assemble XML strings manually must sanitize dynamic identifiers with standard XML entity escaping, especially when rendered in browsers that execute embedded payloads or when parsed by downstream consumers.
+**Prevention:** Always use an `escapeXml` helper function to encode `&`, `<`, `>`, `"`, and `'` before interpolating dynamic user or database content into raw XML templates.
