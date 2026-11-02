@@ -498,46 +498,36 @@ app.post("/api/orders", (req, res) => {
 });
 
 // 10. Dynamic SEO Sitemap & Robots
+// Helper to sanitize dynamic inputs against XML injection / XSS
+const escapeXml = (unsafe: string): string =>
+  String(unsafe).replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" }[c] || c));
+
 app.get("/sitemap.xml", (req, res) => {
   const db = readDatabase();
-  const appUrl = process.env.APP_URL || "https://canalvisual.com.br";
+  const appUrl = escapeXml(process.env.APP_URL || "https://canalvisual.com.br");
   
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-  // Dynamic pages from CMS page tree
+  // Dynamic pages from CMS page tree - escape dynamic slugs to prevent XML injection
   db.pages.forEach((page: any) => {
-    const slugPath = page.slug === "home" ? "" : `/${page.slug}`;
-    xml += `
-  <url>
-    <loc>${appUrl}${slugPath}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>${page.slug === "home" ? "1.0" : "0.8"}</priority>
-  </url>`;
+    const slug = escapeXml(page.slug || "");
+    const slugPath = slug === "home" ? "" : `/${slug}`;
+    xml += `\n  <url>\n    <loc>${appUrl}${slugPath}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>${slug === "home" ? "1.0" : "0.8"}</priority>\n  </url>`;
   });
 
-  // Dynamic products from Catalogue
+  // Dynamic products from Catalogue - escape product IDs
   db.products.forEach((p: any) => {
-    xml += `
-  <url>
-    <loc>${appUrl}/produtos/${p.id}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`;
+    const pId = escapeXml(p.id || "");
+    xml += `\n  <url>\n    <loc>${appUrl}/produtos/${pId}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
   });
 
-  // Dynamic paint schemes
+  // Dynamic paint schemes - escape scheme IDs
   db.paintSchemes.forEach((s: any) => {
-    xml += `
-  <url>
-    <loc>${appUrl}/esquemas-pintura/${s.id}</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`;
+    const sId = escapeXml(s.id || "");
+    xml += `\n  <url>\n    <loc>${appUrl}/esquemas-pintura/${sId}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
   });
 
-  xml += `
-</urlset>`;
+  xml += `\n</urlset>`;
 
   res.setHeader("Content-Type", "application/xml; charset=utf-8");
   res.send(xml);
