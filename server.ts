@@ -497,6 +497,17 @@ app.post("/api/orders", (req, res) => {
   res.status(201).json(newOrder);
 });
 
+// Sanitize XML special characters to prevent XML injection / XSS
+const XML_ENTITIES: Record<string, string> = {
+  "<": "&lt;",
+  ">": "&gt;",
+  "&": "&amp;",
+  "'": "&apos;",
+  '"': "&quot;",
+};
+const escapeXml = (str: string) =>
+  String(str).replace(/[<>&'"]/g, (c) => XML_ENTITIES[c] || c);
+
 // 10. Dynamic SEO Sitemap & Robots
 app.get("/sitemap.xml", (req, res) => {
   const db = readDatabase();
@@ -510,7 +521,7 @@ app.get("/sitemap.xml", (req, res) => {
     const slugPath = page.slug === "home" ? "" : `/${page.slug}`;
     xml += `
   <url>
-    <loc>${appUrl}${slugPath}</loc>
+    <loc>${escapeXml(`${appUrl}${slugPath}`)}</loc>
     <changefreq>weekly</changefreq>
     <priority>${page.slug === "home" ? "1.0" : "0.8"}</priority>
   </url>`;
@@ -520,7 +531,7 @@ app.get("/sitemap.xml", (req, res) => {
   db.products.forEach((p: any) => {
     xml += `
   <url>
-    <loc>${appUrl}/produtos/${p.id}</loc>
+    <loc>${escapeXml(`${appUrl}/produtos/${p.id}`)}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;
@@ -530,7 +541,7 @@ app.get("/sitemap.xml", (req, res) => {
   db.paintSchemes.forEach((s: any) => {
     xml += `
   <url>
-    <loc>${appUrl}/esquemas-pintura/${s.id}</loc>
+    <loc>${escapeXml(`${appUrl}/esquemas-pintura/${s.id}`)}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
