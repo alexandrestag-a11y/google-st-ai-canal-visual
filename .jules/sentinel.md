@@ -1,0 +1,4 @@
+## 2026-07-08 - XML Injection Prevention in Dynamic Sitemap Generation
+**Vulnerability:** Dynamic route `/sitemap.xml` generated an XML document by concatenating database entity identifiers and slugs directly into XML `<loc>` tags without sanitization or escaping. If database records (pages, products, paint schemes) or environment variables contain XML special characters (`<`, `>`, `&`, `"`, `'`), it leads to malformed XML, sitemap parsing failures, or XML injection/XSS vulnerabilities when rendered in user agents.
+**Learning:** Dynamic XML endpoints constructed via string interpolation instead of structured XML builders require explicit escaping of XML delimiters.
+**Prevention:** Always escape user or database controlled inputs using an `escapeXml` helper that sanitizes `<`, `>`, `&`, `'`, and `"` before interpolating into XML template literals.
