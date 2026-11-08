@@ -497,30 +497,49 @@ app.post("/api/orders", (req, res) => {
   res.status(201).json(newOrder);
 });
 
+// Helper to escape XML special characters to prevent XML injection / XSS
+function escapeXml(unsafe: string): string {
+  if (!unsafe) return "";
+  return String(unsafe).replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case "&": return "&amp;";
+      case "'": return "&apos;";
+      case '"': return "&quot;";
+      default: return c;
+    }
+  });
+}
+
 // 10. Dynamic SEO Sitemap & Robots
 app.get("/sitemap.xml", (req, res) => {
   const db = readDatabase();
-  const appUrl = process.env.APP_URL || "https://canalvisual.com.br";
+  const rawAppUrl = process.env.APP_URL || "https://canalvisual.com.br";
+  const appUrl = escapeXml(rawAppUrl.replace(/\/+$/, ""));
   
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
   // Dynamic pages from CMS page tree
   db.pages.forEach((page: any) => {
-    const slugPath = page.slug === "home" ? "" : `/${page.slug}`;
+    const rawSlug = page.slug === "home" ? "" : `/${page.slug}`.replace(/\/+/g, "/");
+    const loc = escapeXml(`${appUrl}${rawSlug}`);
+    const priority = page.slug === "home" ? "1.0" : "0.8";
     xml += `
   <url>
-    <loc>${appUrl}${slugPath}</loc>
+    <loc>${loc}</loc>
     <changefreq>weekly</changefreq>
-    <priority>${page.slug === "home" ? "1.0" : "0.8"}</priority>
+    <priority>${priority}</priority>
   </url>`;
   });
 
   // Dynamic products from Catalogue
   db.products.forEach((p: any) => {
+    const loc = escapeXml(`${appUrl}/produtos/${p.id}`);
     xml += `
   <url>
-    <loc>${appUrl}/produtos/${p.id}</loc>
+    <loc>${loc}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;
@@ -528,9 +547,10 @@ app.get("/sitemap.xml", (req, res) => {
 
   // Dynamic paint schemes
   db.paintSchemes.forEach((s: any) => {
+    const loc = escapeXml(`${appUrl}/esquemas-pintura/${s.id}`);
     xml += `
   <url>
-    <loc>${appUrl}/esquemas-pintura/${s.id}</loc>
+    <loc>${loc}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
