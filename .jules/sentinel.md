@@ -1,0 +1,4 @@
+## 2026-07-05 - XML Injection / Stored XSS in Dynamic Sitemap Endpoint
+**Vulnerability:** The `/sitemap.xml` endpoint directly concatenated user/database-controlled fields (`page.slug`, `product.id`, `paintScheme.id`, and `APP_URL`) into an XML document served with `application/xml` without escaping XML special characters (`<`, `>`, `&`, `'`, `"`).
+**Learning:** Even though IDs and slugs may appear harmless in seeded static JSON data, in CMS and e-commerce setups with dynamic CRUD APIs, unsanitized concatenation into XML can allow stored XML injection, malformed XML feed errors, and potentially stored Cross-Site Scripting (XSS) when sitemaps are rendered by browsers or processed by external XML parsers.
+**Prevention:** Always escape XML reserved entities when templating XML feeds manually, or use an XML builder library with built-in entity encoding.
